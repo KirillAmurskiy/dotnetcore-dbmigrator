@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+
+        <PackageId>Amursoft.DbMigrator</PackageId>
+        <Version>0.1.0</Version>
+        <Authors>Kirill Amurskiy</Authors>
+        <Company>Amursoft</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="dbup-postgresql" Version="4.3.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
+    </ItemGroup>
+
+</Project>
