@@ -17,11 +17,13 @@ namespace Amursoft.DbMigrator
         private readonly MigratorConfig cnfg;
 
         private readonly bool createDb;
-        private readonly string createDbConnection;
-        private readonly string createRolesConnection;
-        private readonly string migrateDbConnection;
+        
         private readonly string scriptsPath;
 
+        public string CreateDbConnection { get; }
+        public string CreateRolesConnection { get; }
+        public string MigrateDbConnection { get; }
+        
         public DbMigrator(MigratorConfig cnfg,  ILogger logger = null)
         {
             if (logger == null)
@@ -34,13 +36,12 @@ namespace Amursoft.DbMigrator
             this.logger = logger;
             upgradeLog = new UpgradeLog(logger);
 
+            
             createDb = cnfg.CreateDb;
-            createDbConnection = MakeConnectionString(cnfg.Server, cnfg.Port, cnfg.Creator, cnfg.CreatorPassword, cnfg.CreatorDb);
-            createRolesConnection = MakeConnectionString(cnfg.Server, cnfg.Port, cnfg.Creator, cnfg.CreatorPassword, cnfg.MigratorDb);
-            migrateDbConnection = MakeConnectionString(cnfg.Server, cnfg.Port, cnfg.Migrator, cnfg.MigratorPassword, cnfg.MigratorDb);
-            scriptsPath = string.IsNullOrEmpty(cnfg.ScriptsPath)
-                ? Directory.GetCurrentDirectory()
-                : cnfg.ScriptsPath;
+            CreateDbConnection = MakeConnectionString(cnfg.Server, cnfg.Port, cnfg.Creator, cnfg.CreatorPassword, cnfg.CreatorDb);
+            CreateRolesConnection = MakeConnectionString(cnfg.Server, cnfg.Port, cnfg.Creator, cnfg.CreatorPassword, cnfg.MigratorDb);
+            MigrateDbConnection = MakeConnectionString(cnfg.Server, cnfg.Port, cnfg.Migrator, cnfg.MigratorPassword, cnfg.MigratorDb);
+            scriptsPath = cnfg.ScriptsPath;
         }
 
         private string MakeConnectionString(string server, string port, string user, string password, string database)
@@ -84,7 +85,7 @@ namespace Amursoft.DbMigrator
             var createDbScriptsPath = Path.Combine(scriptsPath, "CreateDb");
             var upgrader =
                 DeployChanges.To
-                    .PostgresqlDatabase(createDbConnection)
+                    .PostgresqlDatabase(CreateDbConnection)
                     .WithScriptsFromFileSystem(createDbScriptsPath, s => s.EndsWith($"CreateDb.sql"))
                     .LogTo(upgradeLog)
                     .JournalTo(new NullJournal())
@@ -101,7 +102,7 @@ namespace Amursoft.DbMigrator
             var createDbScriptsPath = Path.Combine(scriptsPath, "CreateDb");
             var upgrader =
                 DeployChanges.To
-                    .PostgresqlDatabase(createRolesConnection)
+                    .PostgresqlDatabase(CreateRolesConnection)
                     .WithScriptsFromFileSystem(createDbScriptsPath, s => s.EndsWith($"CreateRoles.sql"))
                     .LogTo(upgradeLog)
                     .JournalTo(new NullJournal())
@@ -116,7 +117,7 @@ namespace Amursoft.DbMigrator
             var migrationScriptsPath = Path.Combine(scriptsPath, "Migrations");
             var upgrader =
                 DeployChanges.To
-                    .PostgresqlDatabase(migrateDbConnection)
+                    .PostgresqlDatabase(MigrateDbConnection)
                     .WithScriptsFromFileSystem(migrationScriptsPath)
                     .LogTo(upgradeLog)
                     .JournalToPostgresqlTable("public", "MigrationsJournal")
