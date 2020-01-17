@@ -11,10 +11,21 @@ namespace Amursoft.DbMigrator
 {
     public class DbMigrator
     {
+        public static DbMigrator MakePostgres(MigratorConfig cnfg, ILogger logger = null)
+        {
+            return new DbMigrator(cnfg, new PostgresDatabase(), logger);
+        }
+        
+        public static DbMigrator MakeMySql(MigratorConfig cnfg, ILogger logger = null)
+        {
+            return new DbMigrator(cnfg, new MySqlDatabase(), logger);
+        }
+        
         private readonly ILogger logger;
         private readonly IUpgradeLog upgradeLog;
 
         private readonly MigratorConfig cnfg;
+        private readonly IDbMigratorDatabase database;
 
         private readonly bool createDb;
         
@@ -24,7 +35,7 @@ namespace Amursoft.DbMigrator
         public string CreateRolesConnection { get; }
         public string MigrateDbConnection { get; }
         
-        public DbMigrator(MigratorConfig cnfg,  ILogger logger = null)
+        public DbMigrator(MigratorConfig cnfg, IDbMigratorDatabase database, ILogger logger = null)
         {
             if (logger == null)
             {
@@ -32,6 +43,7 @@ namespace Amursoft.DbMigrator
             }
             
             this.cnfg = cnfg;
+            this.database = database;
 
             this.logger = logger;
             upgradeLog = new UpgradeLog(logger);
@@ -85,7 +97,7 @@ namespace Amursoft.DbMigrator
             var createDbScriptsPath = Path.Combine(scriptsPath, "CreateDb");
             var upgrader =
                 DeployChanges.To
-                    .PostgresqlDatabase(CreateDbConnection)
+                    .UseDatabase(database, CreateDbConnection)
                     .WithScriptsFromFileSystem(createDbScriptsPath, s => s.EndsWith($"CreateDb.sql"))
                     .LogTo(upgradeLog)
                     .JournalTo(new NullJournal())
@@ -102,7 +114,7 @@ namespace Amursoft.DbMigrator
             var createDbScriptsPath = Path.Combine(scriptsPath, "CreateDb");
             var upgrader =
                 DeployChanges.To
-                    .PostgresqlDatabase(CreateRolesConnection)
+                    .UseDatabase(database, CreateRolesConnection)
                     .WithScriptsFromFileSystem(createDbScriptsPath, s => s.EndsWith($"CreateRoles.sql"))
                     .LogTo(upgradeLog)
                     .JournalTo(new NullJournal())
@@ -117,10 +129,10 @@ namespace Amursoft.DbMigrator
             var migrationScriptsPath = Path.Combine(scriptsPath, "Migrations");
             var upgrader =
                 DeployChanges.To
-                    .PostgresqlDatabase(MigrateDbConnection)
+                    .UseDatabase(database, MigrateDbConnection)
                     .WithScriptsFromFileSystem(migrationScriptsPath)
                     .LogTo(upgradeLog)
-                    .JournalToPostgresqlTable("public", "MigrationsJournal")
+                    .JournalTo(database, cnfg.MigratorDb, "migrations_journal")
                     .Build();
 
             return upgrader.PerformUpgrade();

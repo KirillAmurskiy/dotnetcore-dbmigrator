@@ -4,14 +4,16 @@
         <TargetFramework>netstandard2.0</TargetFramework>
 
         <PackageId>Amursoft.DbMigrator</PackageId>
-        <Version>0.3.0</Version>
+        <Version>0.5.0</Version>
         <Authors>Kirill Amurskiy</Authors>
         <Company>Amursoft</Company>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="dbup-mysql" Version="4.3.0" />
         <PackageReference Include="dbup-postgresql" Version="4.3.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.1" />
+        <PackageReference Include="MySql.Data" Version="8.0.19" />
     </ItemGroup>
 
 </Project>
