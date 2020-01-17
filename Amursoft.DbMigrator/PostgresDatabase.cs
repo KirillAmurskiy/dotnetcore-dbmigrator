@@ -9,8 +9,12 @@ namespace Amursoft.DbMigrator
             return supportedDatabases.PostgresqlDatabase(connectionString);
         }
 
-        public UpgradeEngineBuilder JournalTo(UpgradeEngineBuilder builder, string schema, string table)
+        public UpgradeEngineBuilder JournalTo(UpgradeEngineBuilder builder, string database, string schema, string table)
         {
+            if (string.IsNullOrEmpty(schema))
+            {
+                schema = "public";
+            }
             return builder.JournalToPostgresqlTable(schema, table);
         }
     }

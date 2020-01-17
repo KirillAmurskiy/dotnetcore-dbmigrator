@@ -6,6 +6,6 @@ namespace Amursoft.DbMigrator
     {
         UpgradeEngineBuilder UseDatabase(SupportedDatabases supportedDatabases, string connectionString);
 
-        UpgradeEngineBuilder JournalTo(UpgradeEngineBuilder builder, string schema, string table);
+        UpgradeEngineBuilder JournalTo(UpgradeEngineBuilder builder, string database, string schema, string table);
     }
 }

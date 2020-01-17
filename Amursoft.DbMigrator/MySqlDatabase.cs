@@ -10,9 +10,9 @@ namespace Amursoft.DbMigrator
             return supportedDatabases.MySqlDatabase(connectionString);
         }
 
-        public UpgradeEngineBuilder JournalTo(UpgradeEngineBuilder builder, string schema, string table)
+        public UpgradeEngineBuilder JournalTo(UpgradeEngineBuilder builder, string database, string schema, string table)
         {
-            builder.Configure(c => c.Journal = new MySqlTableJournal(() => c.ConnectionManager, () => c.Log, schema, table));
+            builder.Configure(c => c.Journal = new MySqlTableJournal(() => c.ConnectionManager, () => c.Log, database, table));
             return builder;
         }
     }

@@ -132,7 +132,7 @@ namespace Amursoft.DbMigrator
                     .UseDatabase(database, MigrateDbConnection)
                     .WithScriptsFromFileSystem(migrationScriptsPath)
                     .LogTo(upgradeLog)
-                    .JournalTo(database, cnfg.MigratorDb, "migrations_journal")
+                    .JournalTo(database, cnfg.MigratorDb, string.Empty, "migrations_journal")
                     .Build();
 
             return upgrader.PerformUpgrade();

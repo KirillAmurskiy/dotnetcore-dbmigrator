@@ -1,4 +1,5 @@
 using DbUp.Builder;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace Amursoft.DbMigrator
 {
@@ -11,9 +12,9 @@ namespace Amursoft.DbMigrator
         }
         
         public static UpgradeEngineBuilder JournalTo(this UpgradeEngineBuilder builder,
-            IDbMigratorDatabase database, string schema, string table)
+            IDbMigratorDatabase database, string databaseName, string schema, string table)
         {
-            return database.JournalTo(builder, schema, table);
+            return database.JournalTo(builder, databaseName, schema, table);
         }
     }
 }
